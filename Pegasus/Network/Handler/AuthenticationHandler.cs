@@ -46,7 +46,7 @@ namespace Pegasus.Network.Handler
 
             Account accountInfo = DatabaseManager.GetAccount(username);
             if (accountInfo == null)
-                accountInfo = DatabaseManager.CreateAccount(username, password, session.Remote.Address, Privilege.All);
+                accountInfo = DatabaseManager.CreateAccount(username, password, session.Remote.Address, Privilege.flag_1);
             else
             {
                 // validate existing account
