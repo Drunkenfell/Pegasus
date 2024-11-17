@@ -17,7 +17,7 @@ namespace Pegasus.Map
         {
             log.Info("Loading Dungeon tiles...");
 
-            foreach (Dungeon dungeon in DatabaseManager.GetDungeons())
+            foreach (Database.Model.Dungeon dungeon in DatabaseManager.GetDungeons())
             {
                 dungeons.Add(dungeon.LandBlockId, new DungeonInfo(dungeon));
                 log.Info($"{dungeon.LandBlockId}");
