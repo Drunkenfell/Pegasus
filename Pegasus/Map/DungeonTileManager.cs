@@ -19,8 +19,8 @@ namespace Pegasus.Map
 
             foreach (Database.Model.Dungeon dungeon in DatabaseManager.GetDungeons())
             {
-                dungeons.Add(dungeon.LandBlockId, new DungeonInfo(dungeon));
                 log.Info($"{dungeon.Name}");
+                dungeons.Add(dungeon.LandBlockId, new DungeonInfo(dungeon));
             }
         }
 
