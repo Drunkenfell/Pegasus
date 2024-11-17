@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NLog;
 using Pegasus.Database;
 using Pegasus.Database.Model;
+using static Pegasus.Network.Packet.Raw.Model.ServerDungeonList;
 
 namespace Pegasus.Map
 {
@@ -17,8 +18,10 @@ namespace Pegasus.Map
             log.Info("Loading Dungeon tiles...");
 
             foreach (Dungeon dungeon in DatabaseManager.GetDungeons())
-                log.Info(DungeonInfo(dungeon));
+            {
                 dungeons.Add(dungeon.LandBlockId, new DungeonInfo(dungeon));
+                log.Info(DungeonInfo(dungeon));
+            }
         }
 
         public static DungeonInfo GetDungeonInfo(ushort landBlockId)
