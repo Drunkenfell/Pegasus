@@ -25,7 +25,7 @@ namespace Pegasus.Database.Model
         {
             if (!optionsBuilder.IsConfigured)
                 optionsBuilder.UseMySql($"server={ConfigManager.Config.MySql.Host};port={ConfigManager.Config.MySql.Port};user={ConfigManager.Config.MySql.Username}" +
-                    $";password={ConfigManager.Config.MySql.Password};database={ConfigManager.Config.MySql.Database}");
+                    $";password={ConfigManager.Config.MySql.Password};database={ConfigManager.Config.MySql.Database}", new MySqlServerVersion(new Version()));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
