@@ -7,7 +7,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Update="config.json">
+    <None Update="Config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
