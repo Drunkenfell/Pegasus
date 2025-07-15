@@ -5,6 +5,12 @@
     <TargetFramework>net8.0</TargetFramework> <!-- ✅ Fixed -->
     <LangVersion>latest</LangVersion> <!-- ✅ Moved here for global effect -->
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Update="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" /> <!-- ✅ Updated package name -->
