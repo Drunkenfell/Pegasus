@@ -103,12 +103,20 @@ namespace Pegasus.Database
         }
 
         public static List<Dungeon> GetDungeons()
-        {
-            using (var context = new DatabaseContext())
-                return context.Dungeon
-                    .Include(d => d.DungeonTile)
-                    .AsNoTracking()
-                    .ToList();
-        }
+{
+    using (var context = new DatabaseContext())
+    {
+        Console.WriteLine(context.Dungeon
+            .Include(d => d.DungeonTile)
+            .AsNoTracking()
+            .ToQueryString()); // 👈 THIS LINE shows us the SQL EF is generating
+
+        return context.Dungeon
+            .Include(d => d.DungeonTile)
+            .AsNoTracking()
+            .ToList();
+    }
+}
+
     }
 }
