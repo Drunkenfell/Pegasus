@@ -37,6 +37,13 @@ namespace Pegasus
             try
             {
                 ConfigManager.Initialise($"{Directory.GetCurrentDirectory()}/Config.json");
+
+                log.Info("Applying database migrations...");
+                using (var context = new Pegasus.Database.Model.DatabaseContext())
+                {
+                    context.ApplyMigrations();
+                }
+
                 PacketManager.Initialise();
                 DungeonTileManager.Initialise();
                 NetworkManager.Initialise();
