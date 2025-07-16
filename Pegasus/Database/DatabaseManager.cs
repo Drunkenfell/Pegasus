@@ -108,10 +108,6 @@ namespace Pegasus.Database
 {
     using (var context = new DatabaseContext())
     {
-        Console.WriteLine(context.Dungeon
-            .Include(d => d.DungeonTile)
-            .AsNoTracking()
-            .ToQueryString()); // 👈 THIS LINE shows us the SQL EF is generating
 
         return context.Dungeon
             .Include(d => d.DungeonTile)
