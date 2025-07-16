@@ -161,5 +161,9 @@ namespace Pegasus.Database.Model
                     .HasConstraintName("__FK_friend_id__account_id");
             });
         }
+        public void ApplyMigrations()
+            {
+                this.Database.Migrate();
+            }
     }
 }
