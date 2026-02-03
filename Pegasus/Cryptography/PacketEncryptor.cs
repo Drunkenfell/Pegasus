@@ -49,7 +49,7 @@ namespace Pegasus.Cryptography
             }
             catch (Exception exception)
             {
-                throw exception;
+                throw;
             }
 
             return buffer2;

@@ -1,0 +1,40 @@
+# Ignore build outputs
+/bin/
+/obj/
+**/bin/
+**/obj/
+
+# Publish output (local publish folder)
+/publish/
+
+# Reports and generated audit files
+/reports/
+
+# Logs
+*.log
+
+# Backup and temp files
+*.bak
+*.tmp
+*_output.txt
+
+# User-specific and IDE files
+/.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.DotSettings
+
+# JetBrains Rider
+/.idea/
+
+# Ignore files we created while debugging
+remote-DatabaseContextModelSnapshot.cs
+
+# Runtime config files (local secrets)
+Config.json
+config.json
+*.local.json
+.env
