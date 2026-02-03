@@ -39,7 +39,7 @@ namespace Pegasus
                 ConfigManager.Initialise($"{Directory.GetCurrentDirectory()}/Config.json");
 
                 log.Info("Applying database migrations...");
-                using (var context = new Pegasus.Database.Model.DatabaseContext())
+                using (var context = new global::Pegasus.Database.Model.DatabaseContext())
                 {
                     context.ApplyMigrations();
                 }
