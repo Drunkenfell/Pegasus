@@ -100,7 +100,7 @@ namespace Pegasus.Database.Model
                 entity.ToTable("dungeon_tile");
 
                 entity.HasIndex(e => e.LandBlockId)
-                    .HasName("__FK_dungeon_tile_landBlockId__dungeon_landBlockId");
+                    .HasDatabaseName("__FK_dungeon_tile_landBlockId__dungeon_landBlockId");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -135,7 +135,7 @@ namespace Pegasus.Database.Model
                 entity.ToTable("friend");
 
                 entity.HasIndex(e => e.Friend1)
-                    .HasName("__FK_friend_friend__account_id");
+                    .HasDatabaseName("__FK_friend_friend__account_id");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")

@@ -329,3 +329,8 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 Pegasus/Config.json
+pegasus_build_output.txt
+Pegasus/generate_package_report.ps1
+pegasus_build_output_userdotnet.txt
+*.ps1
+Pegasus/commit.txt

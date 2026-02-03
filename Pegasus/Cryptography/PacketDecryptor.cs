@@ -34,7 +34,7 @@ namespace Pegasus.Cryptography
             catch (Exception exception)
             {
                 Debug.Print(exception.ToString());
-                throw exception;
+                throw;
             }
             return buffer2;
         }
