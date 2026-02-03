@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using NLog;
 
 namespace Pegasus.Cryptography
 {
     public class PacketEncryptor
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
         private Class121 class121_0 = new Class121();
 
         public byte[] Encrypt(byte[] data)
@@ -49,6 +51,7 @@ namespace Pegasus.Cryptography
             }
             catch (Exception exception)
             {
+                log.Error(exception, "PacketEncryptor.Encrypt failed");
                 throw;
             }
 
