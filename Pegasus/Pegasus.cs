@@ -38,15 +38,15 @@ namespace Pegasus
             {
                 ConfigManager.Initialise($"{Directory.GetCurrentDirectory()}/Config.json");
 
-                // Temporarily disable automatic DB migrations at startup so the
-                // server can come online while we fix schema incompatibilities.
-                // Re-enable after applying the proper migration that uses TIMESTAMP
-                // or after switching to app-managed timestamps.
-                // log.Info("Applying database migrations...");
-                // using (var context = new global::Pegasus.Database.Model.DatabaseContext())
-                // {
-                //     context.ApplyMigrations();
-                // }
+                // Ensure targeted DB schema fix for `account.lastTime` exists.
+                // This is a narrow, idempotent check/alter so we can repair the
+                // specific DATETIME -> TIMESTAMP incompatibility without running
+                // full EF migrations at startup.
+                log.Info("Checking/repairing DB schema for account.lastTime...");
+                using (var context = new global::Pegasus.Database.Model.DatabaseContext())
+                {
+                    context.EnsureLastTimeTimestamp();
+                }
 
                 PacketManager.Initialise();
                 DungeonTileManager.Initialise();

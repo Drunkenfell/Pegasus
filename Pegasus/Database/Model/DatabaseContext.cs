@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Data;
+using System.Data.Common;
+using NLog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Pegasus.Configuration;
@@ -7,6 +10,7 @@ namespace Pegasus.Database.Model
 {
     public partial class DatabaseContext : DbContext
     {
+        private static readonly Logger _log = LogManager.GetCurrentClassLogger();
         public DatabaseContext()
         {
         }
@@ -24,8 +28,12 @@ namespace Pegasus.Database.Model
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseMySql($"server={ConfigManager.Config.MySql.Host};port={ConfigManager.Config.MySql.Port};user={ConfigManager.Config.MySql.Username}" +
-                    $";password={ConfigManager.Config.MySql.Password};database={ConfigManager.Config.MySql.Database}", new MySqlServerVersion(new Version()));
+            {
+                var conn = $"server={ConfigManager.Config.MySql.Host};port={ConfigManager.Config.MySql.Port};user={ConfigManager.Config.MySql.Username}" +
+                    $";password={ConfigManager.Config.MySql.Password};database={ConfigManager.Config.MySql.Database}";
+                // Use AutoDetect so Pomelo can generate compatible SQL for the server version
+                optionsBuilder.UseMySql(conn, Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlServerVersion.AutoDetect(conn));
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,8 +63,9 @@ namespace Pegasus.Database.Model
 
                 entity.Property(e => e.LastTime)
                     .HasColumnName("lastTime")
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("'CURRENT_TIMESTAMP'")
+                    // use MySQL TIMESTAMP so server-side CURRENT_TIMESTAMP ON UPDATE works
+                    .HasColumnType("timestamp")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
                     .ValueGeneratedOnAddOrUpdate();
 
                 entity.Property(e => e.Password)
@@ -169,5 +178,51 @@ namespace Pegasus.Database.Model
                 // Re-enable this after the DB schema has been updated.
                 return;
             }
+
+        /// <summary>
+        /// Idempotent check that ensures `account.lastTime` is a TIMESTAMP with
+        /// ON UPDATE CURRENT_TIMESTAMP. If not, attempts to ALTER the column.
+        /// Errors are caught and logged; this method will not throw.
+        /// </summary>
+        public void EnsureLastTimeTimestamp()
+        {
+            try
+            {
+                using DbConnection conn = this.Database.GetDbConnection();
+                if (conn.State != ConnectionState.Open) conn.Open();
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText =
+                        "SELECT COLUMN_TYPE, EXTRA FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='account' AND COLUMN_NAME='lastTime'";
+                    using var rdr = cmd.ExecuteReader();
+                    if (rdr.Read())
+                    {
+                        var columnType = rdr.IsDBNull(0) ? null : rdr.GetString(0);
+                        var extra = rdr.IsDBNull(1) ? null : rdr.GetString(1);
+                        if (!string.IsNullOrEmpty(columnType) && columnType.ToLower().Contains("timestamp")
+                            && !string.IsNullOrEmpty(extra) && extra.ToLower().Contains("on update current_timestamp"))
+                        {
+                            _log.Info("account.lastTime already TIMESTAMP with ON UPDATE CURRENT_TIMESTAMP");
+                            return; // already good
+                        }
+                    }
+                }
+
+                _log.Warn("account.lastTime is not TIMESTAMP+ON UPDATE; attempting ALTER TABLE to convert it.");
+                using (var alter = conn.CreateCommand())
+                {
+                    alter.CommandText =
+                        "ALTER TABLE `account` MODIFY `lastTime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;";
+                    alter.ExecuteNonQuery();
+                }
+
+                _log.Info("Successfully altered account.lastTime to TIMESTAMP with ON UPDATE CURRENT_TIMESTAMP");
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Failed to ensure account.lastTime TIMESTAMP mapping. Manual intervention may be required.");
+            }
+        }
     }
 }
