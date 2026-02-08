@@ -38,11 +38,15 @@ namespace Pegasus
             {
                 ConfigManager.Initialise($"{Directory.GetCurrentDirectory()}/Config.json");
 
-                log.Info("Applying database migrations...");
-                using (var context = new global::Pegasus.Database.Model.DatabaseContext())
-                {
-                    context.ApplyMigrations();
-                }
+                // Temporarily disable automatic DB migrations at startup so the
+                // server can come online while we fix schema incompatibilities.
+                // Re-enable after applying the proper migration that uses TIMESTAMP
+                // or after switching to app-managed timestamps.
+                // log.Info("Applying database migrations...");
+                // using (var context = new global::Pegasus.Database.Model.DatabaseContext())
+                // {
+                //     context.ApplyMigrations();
+                // }
 
                 PacketManager.Initialise();
                 DungeonTileManager.Initialise();
