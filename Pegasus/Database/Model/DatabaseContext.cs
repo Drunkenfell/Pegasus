@@ -163,7 +163,11 @@ namespace Pegasus.Database.Model
         }
         public void ApplyMigrations()
             {
-                this.Database.Migrate();
+                // Temporarily skip applying migrations at runtime so the server can
+                // start while we prepare a proper migration for the `lastTime`
+                // column (DATETIME -> TIMESTAMP) or move timestamping to the app.
+                // Re-enable this after the DB schema has been updated.
+                return;
             }
     }
 }
